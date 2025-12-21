@@ -1,0 +1,42 @@
+┌─────────────────────────────────────────────┐
+│                  CLI Client                 │
+│         (Picocli: login / verify)           │
+└───────────────────────┬─────────────────────┘
+                        │ Java API
+┌───────────────────────▼─────────────────────┐
+│            Application Layer                │
+│                                             │
+│  AuthenticationService                      │
+│  MfaVerificationService                     │
+│                                             │
+└───────────────────────┬─────────────────────┘
+                        │
+┌───────────────────────▼─────────────────────┐
+│                Domain Layer                 │
+│                                             │
+│  UserIdentity                               │
+│  AuthResult / AuthStatus                    │
+│  MfaChallenge / MfaVerification             │
+│  AuditEvent                                 │
+│                                             │
+└───────────────────────┬─────────────────────┘
+                        │ Ports (Interfaces)
+┌───────────────────────▼────────────────────────────────────────┐
+│                              Ports                              │
+│                                                                  │
+│  LdapAuthenticationPort   MfaProvider                           │
+│  AccessTokenService       EmailSender                           │
+│  ChallengeStore           AuditLogger                           │
+│                                                                  │
+└───────────────────────┬────────────────────────────────────────┘
+                        │ Adapters
+┌───────────────────────▼────────────────────────────────────────┐
+│                            Adapters                              │
+│                                                                  │
+│  OpenLDAP Adapter (Spring LDAP)                                   │
+│  Email MFA Provider (SMTP)                                        │
+│  JWT Token Services                                               │
+│  In-memory Challenge Store                                        │
+│  SLF4J Audit Logger                                               │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘

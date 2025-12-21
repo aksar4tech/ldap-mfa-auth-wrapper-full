@@ -1,0 +1,20 @@
+                    ┌──────────────────────────┐
+                    │        CLI Request       │
+                    └─────────────┬────────────┘
+                                  │
+                    ┌─────────────▼────────────┐
+                    │   Virtual Thread (VT)     │
+                    │  (1 per auth request)     │
+                    └─────────────┬────────────┘
+                                  │
+        ┌─────────────────────────┼─────────────────────────┐
+        │                         │                         │
+┌───────▼────────┐       ┌────────▼────────┐       ┌────────▼────────┐
+│ LDAP Bind/Search│       │ MFA Token Logic │       │ Email Send      │
+│ (Blocking I/O)  │       │ (CPU-light)     │       │ (Blocking I/O)  │
+└─────────────────┘       └─────────────────┘       └─────────────────┘
+
+• Each request runs independently
+• Blocking I/O does not block platform threads
+• No reactive programming required
+• Stateless services enable horizontal scaling

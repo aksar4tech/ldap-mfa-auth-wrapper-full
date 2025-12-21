@@ -1,0 +1,27 @@
+@startuml
+actor User
+participant CLI
+participant AuthService
+participant LDAP
+participant MFA
+participant Email
+participant TokenService
+
+User -> CLI : login(username, password)
+CLI -> AuthService : authenticate()
+
+AuthService -> LDAP : bind + validate credentials
+LDAP --> AuthService : success
+
+AuthService -> MFA : initiate()
+MFA -> TokenService : generate MFA token
+MFA -> Email : send magic link
+AuthService --> CLI : MFA_REQUIRED (challengeId)
+
+User -> CLI : verify(challengeId, token)
+CLI -> AuthService : verifyMfa()
+
+AuthService -> TokenService : validate MFA token
+AuthService -> TokenService : issue access token
+AuthService --> CLI : SUCCESS (accessToken)
+@enduml

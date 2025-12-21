@@ -1,0 +1,36 @@
+
+package com.example.cli;
+
+import com.example.auth.application.MfaVerificationService;
+import com.example.auth.domain.AuthResult;
+import com.example.auth.domain.MfaVerification;
+import picocli.CommandLine;
+
+@CommandLine.Command(name = "verify", description = "Verify MFA challenge")
+public class VerifyCommand implements Runnable {
+
+    @CommandLine.Option(names = "--challengeId", required = true)
+    String challengeId;
+
+    @CommandLine.Option(names = "--token", required = true)
+    String token;
+
+/*    @Override
+    public void run() {
+        try (var ctx = new AnnotationConfigApplicationContext("com.example.auth")) {
+            MfaVerificationService service = ctx.getBean(MfaVerificationService.class);
+            var result = service.verify(new MfaVerification(challengeId, token));
+            System.out.println(result);
+        }
+    }*/
+
+    @Override
+    public void run() {
+        MfaVerificationService service = SpringContextHolder.getBean(MfaVerificationService.class);
+
+        AuthResult result = service.verify(new MfaVerification(challengeId, token));
+
+        System.out.println(result);
+    }
+
+}
