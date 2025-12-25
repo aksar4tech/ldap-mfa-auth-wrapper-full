@@ -2,6 +2,7 @@ package com.example.auth.domain;
 
 public record AuthRequest(
         String username,
-        char[] password
+        char[] password,
+        String deviceId
 ) {}
 

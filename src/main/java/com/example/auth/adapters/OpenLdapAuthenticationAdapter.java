@@ -52,20 +52,17 @@ public class OpenLdapAuthenticationAdapter implements LdapAuthenticationPort {
             List<UserIdentity> users = ldapTemplate.search(
                     userSearchBase,
                     filter.encode(),
-                    new AttributesMapper<>() {
-                        @Override
-                        public UserIdentity mapFromAttributes(Attributes attrs) throws NamingException {
+                    (AttributesMapper<UserIdentity>) attrs -> {
 
-                            String dn = attrs.get("distinguishedName") != null
-                                    ? attrs.get("distinguishedName").get().toString()
-                                    : null;
+                        String dn = attrs.get("distinguishedName") != null
+                                ? attrs.get("distinguishedName").get().toString()
+                                : null;
 
-                            String email = attrs.get(emailAttribute) != null
-                                    ? attrs.get(emailAttribute).get().toString()
-                                    : null;
+                        String email = attrs.get(emailAttribute) != null
+                                ? attrs.get(emailAttribute).get().toString()
+                                : null;
 
-                            return new UserIdentity(username, dn, email);
-                        }
+                        return new UserIdentity(username, dn, email);
                     }
             );
 
@@ -81,7 +78,14 @@ public class OpenLdapAuthenticationAdapter implements LdapAuthenticationPort {
 
     @Override
     public boolean isAccountLocked(String username) {
-        // OpenLDAP lockout is schema-specific
-        return false;
+        EqualsFilter filter = new EqualsFilter("uid", username);
+
+        List<Boolean> results = ldapTemplate.search(
+                userSearchBase,
+                filter.encode(),
+                (AttributesMapper<Boolean>) attrs -> attrs.get("pwdAccountLockedTime") != null
+        );
+
+        return results.stream().findFirst().orElse(false);
     }
 }

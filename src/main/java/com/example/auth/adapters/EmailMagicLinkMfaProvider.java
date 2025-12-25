@@ -1,19 +1,11 @@
 package com.example.auth.adapters;
 
 import com.example.auth.application.AppExecutors;
-import com.example.auth.config.AppConfig;
-import com.example.auth.domain.ChallengeStatus;
 import com.example.auth.domain.MfaChallenge;
 import com.example.auth.domain.MfaVerification;
-import com.example.auth.domain.UserIdentity;
 import com.example.auth.ports.EmailSender;
 import com.example.auth.ports.MfaProvider;
 import com.example.auth.ports.MfaTokenService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.time.Instant;
-import java.util.UUID;
 
 public class EmailMagicLinkMfaProvider implements MfaProvider {
 
@@ -32,35 +24,35 @@ public class EmailMagicLinkMfaProvider implements MfaProvider {
     }
 
     @Override
-    public MfaChallenge initiate(UserIdentity user) {
+    public void send(MfaChallenge challenge) {
 
-        String challengeId = UUID.randomUUID().toString();
-        String token = mfaTokenService.generateToken(user.username(), challengeId);
+        String token = mfaTokenService.generateToken(challenge.username(), challenge.challengeId());
 
         String body = """
-                Hello %s,
+                Hi %s,
 
-                Click the link below to complete authentication:
-                
-                token: %s
-                challengeId: %s
+                Please verify your login.
 
-                This link expires in 10 minutes.
-                """.formatted(user.username(), token, challengeId);
+                Challenge ID:
+                %s
 
-        AppExecutors.NOTIFICATION_EXECUTOR.submit( () ->
-            emailSender.send(
-                    user.email(),
-                    "Your login verification request",
-                    body
-            )
+                MFA Token:
+                %s
+
+                This token is valid for %d minutes.
+                """.formatted(
+                challenge.username(),
+                challenge.challengeId(),
+                token,
+                mfaTokenTtlSeconds / 60
         );
 
-        return new MfaChallenge(
-                challengeId,
-                user.username(),
-                Instant.now().plusSeconds(mfaTokenTtlSeconds),
-                ChallengeStatus.PENDING
+        AppExecutors.NOTIFICATION_EXECUTOR.submit(() ->
+                emailSender.send(
+                        challenge.username(),   // or email from LDAP
+                        "Login Verification",
+                        body
+                )
         );
     }
 

@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface ChallengeStore {
 
+    MfaChallenge create(String username, String deviceId);
+
     void save(MfaChallenge challenge);
 
     Optional<MfaChallenge> findById(String challengeId);

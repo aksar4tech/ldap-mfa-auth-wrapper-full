@@ -14,20 +14,15 @@ public class LoginCommand implements Runnable {
     @CommandLine.Option(names = "--password", required = true)
     String password;
 
-/*    @Override
-    public void run() {
-        try (var ctx = new AnnotationConfigApplicationContext("com.example.auth")) {
-            AuthenticationService service = ctx.getBean(AuthenticationService.class);
-            var result = service.authenticateAsync(new AuthRequest(username, password.toCharArray()));
-            System.out.println(result);
-        }
-    }*/
+    @CommandLine.Option(names = "--deviceId", required = true)
+    String deviceId;
+
 
     @Override
     public void run() {
         AuthenticationService service = SpringContextHolder.getBean(AuthenticationService.class);
 
-        AuthResult result = service.authenticateAsync(new AuthRequest(username, password.toCharArray()));
+        AuthResult result = service.authenticateAsync(new AuthRequest(username, password.toCharArray(), deviceId));
 
         System.out.println(result);
     }

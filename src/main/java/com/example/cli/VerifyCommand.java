@@ -15,20 +15,14 @@ public class VerifyCommand implements Runnable {
     @CommandLine.Option(names = "--token", required = true)
     String token;
 
-/*    @Override
-    public void run() {
-        try (var ctx = new AnnotationConfigApplicationContext("com.example.auth")) {
-            MfaVerificationService service = ctx.getBean(MfaVerificationService.class);
-            var result = service.verify(new MfaVerification(challengeId, token));
-            System.out.println(result);
-        }
-    }*/
+    @CommandLine.Option(names = "--deviceId", required = true)
+    String deviceId;
 
     @Override
     public void run() {
         MfaVerificationService service = SpringContextHolder.getBean(MfaVerificationService.class);
 
-        AuthResult result = service.verify(new MfaVerification(challengeId, token));
+        AuthResult result = service.verify(new MfaVerification(challengeId, token, deviceId));
 
         System.out.println(result);
     }

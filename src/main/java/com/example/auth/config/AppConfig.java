@@ -9,13 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.LdapContextSource;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 
 
 @Configuration
@@ -98,7 +91,7 @@ public class AppConfig {
 
     @Bean
     public ChallengeStore challengeStore() {
-        return new InMemoryChallengeStore();
+        return new InMemoryChallengeStore(mfaTokenTtlSeconds);
     }
 
     @Bean

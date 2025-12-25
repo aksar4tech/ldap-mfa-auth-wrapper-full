@@ -42,8 +42,14 @@ public class MfaVerificationService {
 
                     MfaChallenge challenge = challengeOpt.get();
 
+                    // Expiration check
                     if (challenge.expiresAt().isBefore(Instant.now())) {
                         return AuthResult.failed("Challenge expired");
+                    }
+
+                    // Device binding check
+                    if (!challenge.deviceId().equals(verification.deviceId())) {
+                        return AuthResult.failed("Device mismatch");
                     }
 
                     // Verify MFA token

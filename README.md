@@ -222,7 +222,7 @@ java -jar target/ldap-mfa-auth-wrapper-1.0.0.jar
 
 ```bash
 Auth CLI started. Type 'help' or 'exit'.
-auth> login --username alice --password secret
+auth> login --username alice --password secret --deviceId abc
 ```
 
 Expected output:
@@ -236,7 +236,7 @@ AuthResult{status=MFA_REQUIRED, challengeId=1234}
 ### 4. Verify MFA
 
 ```bash
-auth> verify --challengeId 1234 --token eyJhbGciOiJIUzI1NiJ9...
+auth> verify --challengeId 1234 --deviceId abc --token eyJhbGciOiJIUzI1NiJ9...
 ```
 
 Expected output:

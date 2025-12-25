@@ -54,8 +54,14 @@ public class AuthenticationService {
                                         "Primary authentication successful"
                                 ));
 
-                                MfaChallenge challenge = mfaProvider.initiate(user);
+                                // Create the challenge
+                                MfaChallenge challenge = challengeStore.create(request.username(),  request.deviceId());
+
+                                // Save the challenge to the inmemory store
                                 challengeStore.save(challenge);
+
+                                // Send the challenge to the email for MFA
+                                mfaProvider.send(challenge);
 
                                 auditLogger.log(new AuditEvent(
                                         java.time.Instant.now(),
